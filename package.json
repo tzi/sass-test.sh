@@ -1,0 +1,23 @@
+{
+  "name": "sass-test.sh",
+  "version": "1.0.0",
+  "description": "A script for testing Sass libraries by comparing compiled output",
+  "bin" : { "sass-test" : "./script.sh" },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tzi/sass-test.sh.git"
+  },
+  "keywords": [
+    "sass",
+    "test"
+  ],
+  "author": "Thomas ZILLIOX (http://tzi.fr)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tzi/sass-test.sh/issues"
+  },
+  "homepage": "https://github.com/tzi/sass-test.sh#readme"
+}
