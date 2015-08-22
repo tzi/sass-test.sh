@@ -7,7 +7,9 @@ A script for testing Sass libraries by comparing compiled output.
 Installation
 ------
 
-
+```
+$ npm install sass-test.sh --save
+```
 
 
 Projects using it
@@ -16,13 +18,13 @@ Projects using it
  * [herow.scss](https://github.com/tzi/herow.scss): A time-saving Sass grid system.
  * [chewing-grid.css](https://github.com/tzi/chewing-grid.css): A CSS Grid ideal for card listing design like tiles, videos or articles listing
  
-Are you using sass-test.sh? [Let me know about it](https://twitter.com/iamtzi) or add it directly with a PR. 
+Are you using sass-test.sh? [Let me know](https://twitter.com/iamtzi) about it or add it directly with a PR. 
  
  
 Other Sass testing lib
 ------
 
-Not satisfied with sass-test.sh? Maybe you should try theses awesome other projects:
+Not satisfied with sass-test.sh? Maybe you should try theses awesome projects:
 
  * [SassUnit](https://github.com/penman/SassUnit): A Ruby gem for comparing compiled output.
  * [Bootcamp](https://github.com/thejameskyle/bootcamp): Jasmine-style BDD testing for Sass.
