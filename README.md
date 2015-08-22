@@ -7,8 +7,27 @@ A script for testing Sass libraries by comparing compiled output.
 Installation
 ------
 
-```
+Install it via npm:
+
+```sh
 $ npm install sass-test.sh --save
+```
+
+Set your `package.json` to use sass-test.sh.
+If your use cases are not in the `test/` folder, you can list your scss files as script arguments:
+
+```json
+{
+  "scripts": {
+    "test": "sass-test [scss use cases files]"
+  }
+}
+```
+
+Lanch your tests
+
+```
+$ npm test
 ```
 
 
