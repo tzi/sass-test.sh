@@ -3,6 +3,8 @@ sass-test.sh
 
 A script for testing Sass libraries by comparing compiled output.
 
+![sass-test.sh script demonstration](demo.gif)
+
 
 Installation
 ------
@@ -28,8 +30,7 @@ Lanch your tests
 
 ```sh
 npm test
-```
-
+``
 
 Projects using it
 ------
