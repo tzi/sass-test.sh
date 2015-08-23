@@ -30,7 +30,8 @@ Lanch your tests
 
 ```sh
 npm test
-``
+```
+
 
 Projects using it
 ------
