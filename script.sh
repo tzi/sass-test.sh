@@ -29,21 +29,22 @@ function compile() {
 # Find sass source files in test folder or in parameters
 if [ $# -eq 0 ];
 then
-  SCSS_FILE_LIST=( $(find ./test -type f | grep ".scss$") );
-  SCSS_FILE_LIST="${SCSS_FILE_LIST[@]}";
+  SCSS_FOLDER="test";
 else
-  SCSS_FILE_LIST=$@;
+  SCSS_FOLDER=$@;
 fi;
+SCSS_FILE_LIST=( $(find ${SCSS_FOLDER} -type f | grep ".scss$") );
+
+# Is a test
+if [ ${#SCSS_FILE_LIST[@]} -eq 0 ];
+then
+  echo "No test found: ${SCSS_FOLDER}"
+  exit 1;
+fi;
+SCSS_FILE_LIST="${SCSS_FILE_LIST[@]}";
 
 for SCSS_FILE in $(echo ${SCSS_FILE_LIST});
 do
-
-  # Is source file correct
-  if [ ! -f ${SCSS_FILE} -o ${SCSS_FILE##*.} != "scss" ];
-  then
-    echo "${SCSS_FILE}: NOT FOUND";
-    continue;
-  fi;
   
   # Is expected result exists
   CSS_FILE=$( echo ${SCSS_FILE%.*}.css);
