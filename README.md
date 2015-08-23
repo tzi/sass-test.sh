@@ -10,10 +10,10 @@ Installation
 Install it via npm:
 
 ```sh
-$ npm install sass-test.sh --save
+npm install sass-test.sh --save
 ```
 
-Set your `package.json` to use sass-test.sh.
+You can set your `package.json` to use sass-test.sh.
 If your use cases are not in the `test/` folder, you can list your scss files as script arguments:
 
 ```json
@@ -26,8 +26,8 @@ If your use cases are not in the `test/` folder, you can list your scss files as
 
 Lanch your tests
 
-```
-$ npm test
+```sh
+npm test
 ```
 
 

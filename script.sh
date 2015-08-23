@@ -14,6 +14,14 @@ function confirm() {
   fi
 }
 
+function green() {
+  echo "$(tput setab 2; tput setaf 0) $1 $(tput sgr 0)"
+}
+
+function red() {
+  echo "$(tput setab 1; tput setaf 7) $1 $(tput sgr 0)"
+}
+
 function compile() {
   sass $1 --style expanded --sourcemap=none
 }
@@ -52,12 +60,13 @@ do
   
   # Compare compiled & expected
   DIFF=$( compile ${SCSS_FILE} | diff ${CSS_FILE} - | wc -l);
+  echo -n "${SCSS_FILE}: ";
   if [ $DIFF -eq 0 ];
   then
-    echo "${SCSS_FILE}: OK";
+    green "PASSED";
     continue;
   fi;
-  echo "${SCSS_FILE}: ERROR"
+  red "ERROR"
   
   confirm "see the difference?"
   if [ $ANSWER == true ];
