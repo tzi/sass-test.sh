@@ -14,12 +14,12 @@ npm install sass-test.sh --save
 ```
 
 You can set your `package.json` to use sass-test.sh.
-If your use cases are not in the `test/` folder, you can list your scss files as script arguments:
+If your use cases are not in the `test/` folder, set the path as script argument:
 
 ```json
 {
   "scripts": {
-    "test": "sass-test [scss use cases files]"
+    "test": "sass-test [test directory|scss test files]"
   }
 }
 ```
