@@ -50,6 +50,7 @@ Not satisfied with sass-test.sh? Maybe you should try theses awesome projects:
  * [SassUnit](https://github.com/penman/SassUnit): A Ruby gem for comparing compiled output.
  * [Bootcamp](https://github.com/thejameskyle/bootcamp): Jasmine-style BDD testing for Sass.
  * [https://github.com/ericam/true](https://github.com/ericam/true): Sass functions & mixins unit tests.
+ * [SassyTester](https://github.com/HugoGiraudel/SassyTester): A minimalistic function tester in Sass.
   
   
 How to Contribute
