@@ -48,9 +48,8 @@ Other Sass testing lib
 Not satisfied with sass-test.sh? Maybe you should try theses awesome projects:
 
  * [SassUnit](https://github.com/penman/SassUnit): A Ruby gem for comparing compiled output.
- * [Bootcamp](https://github.com/thejameskyle/bootcamp): Jasmine-style BDD testing for Sass.
- * [True](https://ericam.github.com/true): Unit tests for Sass.
  * [SassyTester](https://github.com/HugoGiraudel/SassyTester): A minimalistic function tester in Sass.
+ * [True](https://ericam.github.com/true): Unit tests for Sass.
   
   
 How to Contribute
