@@ -15,11 +15,11 @@ function confirm() {
 }
 
 function green() {
-  echo "$(tput setab 2; tput setaf 0) $1 $(tput sgr 0)"
+  echo -n "$(tput setab 2; tput setaf 0) $1 $(tput sgr 0)"
 }
 
 function red() {
-  echo "$(tput setab 1; tput setaf 7) $1 $(tput sgr 0)"
+  echo -n "$(tput setab 1; tput setaf 7) $1 $(tput sgr 0)"
 }
 
 function available() {
@@ -52,9 +52,11 @@ function test() {
   if [ $DIFF -eq 0 ];
   then
     green "PASSED";
+    echo;
     return 0;
   fi;
-  red "ERROR"
+  red "FAILED";
+  echo;
 
   if confirm "see the difference?"
   then
@@ -92,16 +94,48 @@ then
 fi;
 SCSS_FILE_LIST="${SCSS_FILE_LIST[@]}";
 
+TOTAL_TEST=0;
+PASSED_TEST=0;
+
 # Foreach source file
 for SCSS_FILE in ${SCSS_FILE_LIST};
 do
   if available sass;
   then
-    test sass ${SCSS_FILE}
+    TOTAL_TEST=$(expr ${TOTAL_TEST} + 1);
+    if test sass ${SCSS_FILE};
+    then
+      PASSED_TEST=$(expr ${PASSED_TEST} + 1);
+    fi;
   fi;
 
   if available node-sass;
   then
-    test node-sass ${SCSS_FILE}
+    TOTAL_TEST=$(expr ${TOTAL_TEST} + 1);
+    if test node-sass ${SCSS_FILE};
+    then
+      PASSED_TEST=$(expr ${PASSED_TEST} + 1);
+    fi;
   fi;
 done;
+
+FAILED_TEST=$(expr ${TOTAL_TEST} - ${PASSED_TEST});
+
+echo ;
+if [ ${FAILED_TEST} -gt 0 ];
+then
+  red "${FAILED_TEST} tests failed";
+  echo -n " ";
+fi;
+if [ ${PASSED_TEST} -gt 0 ];
+then
+  green "${PASSED_TEST} tests passed";
+  echo -n " ";
+fi;
+echo "(${TOTAL_TEST} total)";
+echo ;
+
+if [ ${FAILED_TEST} -gt 0 ];
+then
+  exit 1;
+fi;
