@@ -1,6 +1,6 @@
 {
   "name": "sass-test.sh",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "A script for testing Sass libraries by comparing compiled output",
   "bin" : { "sass-test" : "./script.sh" },
   "scripts": {
