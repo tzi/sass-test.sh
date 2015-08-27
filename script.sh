@@ -114,12 +114,6 @@ do
   esac
 done;
 
-# Check script parameters
-if [ $# -lt 1 ];
-then
-  usage;
-fi
-
 # Check sass compiler availability
 if ! available sass && ! available node-sass;
 then
@@ -140,7 +134,7 @@ SCSS_FILE_LIST=( $(find ${SCSS_FOLDER} -type f | grep ".scss$") );
 if [ ${#SCSS_FILE_LIST[@]} -eq 0 ];
 then
   echo "No test found: ${SCSS_FOLDER}"
-  exit 1;
+  usage;
 fi;
 SCSS_FILE_LIST="${SCSS_FILE_LIST[@]}";
 
