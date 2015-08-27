@@ -1,7 +1,8 @@
 sass-test.sh
 ======
 
-A script for testing Sass libraries by comparing compiled output.
+A script for testing Sass libraries by comparing compiled output. 
+It supports both `Ruby sass` and `Libsass` implementations according of what is installed.
 
 ![sass-test.sh script demonstration](demo.gif)
 
