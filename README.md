@@ -34,6 +34,35 @@ npm test
 ```
 
 
+Usage
+------
+
+In the default usage, the script searches for test cases into the `test/` folder.
+You can set up another folder or directly a specific test case.
+
+```sh
+npm test folder/
+npm test folder/testcase.scss
+npm test folder/testcase1.scss folder/testcase2.scss
+```
+
+The default script mode is interactive.
+In error cases, it will ask you if you want to see the differences or to regenerate the test result.
+
+You can ask to regenerate the test results without asking, with the `regenerate` mode:
+
+```sh
+npm test --regenerate folder/
+```
+
+You can also disable all questions with the `status-only` mode.
+This is ideal for continuous integration:
+
+```sh
+npm test --status-only folder/
+```
+
+
 Projects using it
 ------
 

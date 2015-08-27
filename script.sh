@@ -1,9 +1,22 @@
 #!/bin/bash
 
+function usage
+{
+    echo "Usage: $0 [-d | -s] testFolder";
+    echo "";
+    echo "Options:";
+    echo "    -r, --regenerate";
+    echo "        in errors cases, regenerate new results";
+    echo "    -s, --status-only";
+    echo "        stop interactive mode, only display tests status only";
+    echo "";
+    exit 1;
+}
+
 function confirm() {
   read -p "  - Do you want to ${1} (Y/n)? " -n 1 -r;
-  echo '';
-  if [ $REPLY = 'q' ];
+  echo "";
+  if [ $REPLY = "q" ];
   then
     exit 1
   fi
@@ -33,17 +46,20 @@ function compile() {
 function test() {
   COMMAND=$1;
   SCSS_FILE=$2;
+  MODE=$3;
 
   # Is expected result exists
   CSS_FILE=$( echo ${SCSS_FILE%.*}.css);
   if [ ! -f ${CSS_FILE} ];
   then
     echo "No existing result test for '${SCSS_FILE}'."
-    if confirm "generate a new one?";
+    if [ ${MODE} == "regenerate" ] || ( [ ${MODE} == "interactive" ] && confirm "generate a new one?" );
     then
       compile "${COMMAND}" "${SCSS_FILE}" > ${CSS_FILE};
+      return 0;
+    else
+      return 1;
     fi;
-    return 0;
   fi;
 
   # Compare compiled & expected
@@ -58,17 +74,51 @@ function test() {
   red "FAILED";
   echo;
 
-  if confirm "see the difference?"
+  if [ ${MODE} == "interactive" ] && confirm "see the difference?"
   then
     compile "${COMMAND}" "${SCSS_FILE}" | diff -w -B ${CSS_FILE} -;
   fi;
 
-  if confirm "override the current result?";
+  if [ ${MODE} == "regenerate" ] || ( [ ${MODE} == "interactive" ] && confirm "override the current result?" );
   then
     compile "${COMMAND}" "${SCSS_FILE}" > ${CSS_FILE}
   fi;
   return 1;
 }
+
+# Compile script options
+MODE="interactive";
+OPTS=( $(getopt -o irsh -l interactive,regenerate,status-only,help -- "$@") );
+if [ $? -ne 0 ]
+then
+    usage
+fi
+for OPT in ${OPTS};
+do
+  case $OPT in
+    -r|--regenerate)
+        shift;
+        MODE="regenerate";
+        ;;
+    -s|--status-only)
+        shift;
+        MODE="status-only";
+        ;;
+    -i|--interactive)
+        shift;
+        MODE="interactive";
+        ;;
+    -h|--help)
+        usage;
+        ;;
+  esac
+done;
+
+# Check script parameters
+if [ $# -lt 1 ];
+then
+  usage;
+fi
 
 # Check sass compiler availability
 if ! available sass && ! available node-sass;
@@ -103,7 +153,7 @@ do
   if available sass;
   then
     TOTAL_TEST=$(expr ${TOTAL_TEST} + 1);
-    if test sass ${SCSS_FILE};
+    if test sass ${SCSS_FILE} ${MODE};
     then
       PASSED_TEST=$(expr ${PASSED_TEST} + 1);
     fi;
@@ -112,7 +162,7 @@ do
   if available node-sass;
   then
     TOTAL_TEST=$(expr ${TOTAL_TEST} + 1);
-    if test node-sass ${SCSS_FILE};
+    if test node-sass ${SCSS_FILE} ${MODE};
     then
       PASSED_TEST=$(expr ${PASSED_TEST} + 1);
     fi;
