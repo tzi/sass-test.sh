@@ -3,15 +3,15 @@
 function confirm() {
   read -p "  - Do you want to ${1} (Y/n)? " -n 1 -r;
   echo '';
-  ANSWER=false;
   if [ $REPLY = 'q' ];
   then
     exit 1
   fi
   if [[ $REPLY =~ ^[Yy]$ ]];
   then
-    ANSWER=true;
+    return 0;
   fi
+  return 1;
 }
 
 function green() {
@@ -22,9 +22,58 @@ function red() {
   echo "$(tput setab 1; tput setaf 7) $1 $(tput sgr 0)"
 }
 
-function compile() {
-  sass $1 --style expanded --sourcemap=none
+function available() {
+  return $(hash $1 2>/dev/null);
 }
+
+function compile() {
+  $1 $2 --sourcemap=none;
+}
+
+function test() {
+  COMMAND=$1;
+  SCSS_FILE=$2;
+
+  # Is expected result exists
+  CSS_FILE=$( echo ${SCSS_FILE%.*}.css);
+  if [ ! -f ${CSS_FILE} ];
+  then
+    echo "No existing result test for '${SCSS_FILE}'."
+    if confirm "generate a new one?";
+    then
+      compile "${COMMAND}" "${SCSS_FILE}" > ${CSS_FILE};
+    fi;
+    return 0;
+  fi;
+
+  # Compare compiled & expected
+  DIFF=$( compile "${COMMAND}" "${SCSS_FILE}" | diff -w -B ${CSS_FILE} - | wc -l);
+  echo -n "${SCSS_FILE}: ${COMMAND} -> ";
+  if [ $DIFF -eq 0 ];
+  then
+    green "PASSED";
+    return 0;
+  fi;
+  red "ERROR"
+
+  if confirm "see the difference?"
+  then
+    compile "${COMMAND}" "${SCSS_FILE}" | diff -w -B ${CSS_FILE} -;
+  fi;
+
+  if confirm "override the current result?";
+  then
+    compile "${COMMAND}" "${SCSS_FILE}" > ${CSS_FILE}
+  fi;
+  return 1;
+}
+
+# Check sass compiler availability
+if ! available sass && ! available node-sass;
+then
+  echo "Neither sass or node-sass compiler found."
+  exit 1;
+fi;
 
 # Find sass source files in test folder or in parameters
 if [ $# -eq 0 ];
@@ -43,42 +92,16 @@ then
 fi;
 SCSS_FILE_LIST="${SCSS_FILE_LIST[@]}";
 
-for SCSS_FILE in $(echo ${SCSS_FILE_LIST});
+# Foreach source file
+for SCSS_FILE in ${SCSS_FILE_LIST};
 do
-  
-  # Is expected result exists
-  CSS_FILE=$( echo ${SCSS_FILE%.*}.css);
-  if [ ! -f ${CSS_FILE} ];
+  if available sass;
   then
-    echo "No existing result test for '${SCSS_FILE}'."
-    confirm "generate a new one?"
-    if [ $ANSWER == true ];
-    then
-      compile ${SCSS_FILE} > ${CSS_FILE}
-    fi;
-    continue;
+    test sass ${SCSS_FILE}
   fi;
-  
-  # Compare compiled & expected
-  DIFF=$( compile ${SCSS_FILE} | diff ${CSS_FILE} - | wc -l);
-  echo -n "${SCSS_FILE}: ";
-  if [ $DIFF -eq 0 ];
+
+  if available node-sass;
   then
-    green "PASSED";
-    continue;
+    test node-sass ${SCSS_FILE}
   fi;
-  red "ERROR"
-  
-  confirm "see the difference?"
-  if [ $ANSWER == true ];
-  then
-    compile ${SCSS_FILE} | diff --side-by-side ${CSS_FILE} -;
-  fi;
-  
-  confirm "override the current result?"
-  if [ $ANSWER == true ];
-  then
-    compile ${SCSS_FILE} > ${CSS_FILE}
-  fi;
-  
 done;
