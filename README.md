@@ -46,20 +46,18 @@ sass-test folder/testcase.scss
 sass-test folder/testcase1.scss folder/testcase2.scss
 ```
 
-The default script mode is interactive.
-In error cases, it will ask you if you want to see the differences or to regenerate the test result.
-
-You can ask to regenerate the test results without asking, with the `regenerate` mode:
+The default script mode only show test status.
+You can automatically regenerate test results, with the `regenerate` mode:
 
 ```sh
 sass-test --regenerate folder/
 ```
 
-You can also disable all questions with the `status-only` mode.
-This is ideal for continuous integration:
+You can also use the `interactive` mode.
+In error cases, it will ask you if you want to see the differences or to regenerate the test result:
 
 ```sh
-sass-test --status-only folder/
+sass-test --interactive folder/
 ```
 
 

@@ -7,8 +7,8 @@ function usage
     echo "Options:";
     echo "    -r, --regenerate";
     echo "        in errors cases, regenerate new results";
-    echo "    -s, --status-only";
-    echo "        stop interactive mode, only display tests status only";
+    echo "    -i, --interactive";
+    echo "        in errors cases, ask to show the output differences and to regenerate an output";
     echo "";
     exit 1;
 }
@@ -43,24 +43,43 @@ function compile() {
   $1 $2 --sourcemap=none;
 }
 
-function test() {
-  COMMAND=$1;
-  SCSS_FILE=$2;
-  MODE=$3;
+function ready() {
+  SCSS_FILE=$1;
+  MODE=$2;
 
   # Is expected result exists
   CSS_FILE=$( echo ${SCSS_FILE%.*}.css);
   if [ ! -f ${CSS_FILE} ];
   then
-    echo "No existing result test for '${SCSS_FILE}'."
+    if [ ${MODE} == "interactive" ];
+    then
+       echo "No existing result test for '${SCSS_FILE}'."
+    fi;
     if [ ${MODE} == "regenerate" ] || ( [ ${MODE} == "interactive" ] && confirm "generate a new one?" );
     then
+      COMMAND="node-sass";
+      if available sass;
+      then
+        COMMAND="sass";
+      fi;
       compile "${COMMAND}" "${SCSS_FILE}" > ${CSS_FILE};
+      echo -n "${SCSS_FILE}: ";
+      green "REGENERATED";
+      echo "";
       return 0;
     else
+      echo -n "${SCSS_FILE}: ";
+      red "MISSED";
+      echo "";
       return 1;
     fi;
   fi;
+}
+
+function test() {
+  COMMAND=$1;
+  SCSS_FILE=$2;
+  MODE=$3;
 
   # Compare compiled & expected
   DIFF=$( compile "${COMMAND}" "${SCSS_FILE}" | diff -w -B ${CSS_FILE} - | wc -l);
@@ -71,8 +90,10 @@ function test() {
     echo;
     return 0;
   fi;
-  red "FAILED";
-  echo;
+  if [ ${MODE} != "regenerate" ];
+  then
+    red "FAILED";
+  fi;
 
   if [ ${MODE} == "interactive" ] && confirm "see the difference?"
   then
@@ -81,13 +102,20 @@ function test() {
 
   if [ ${MODE} == "regenerate" ] || ( [ ${MODE} == "interactive" ] && confirm "override the current result?" );
   then
-    compile "${COMMAND}" "${SCSS_FILE}" > ${CSS_FILE}
+    compile "${COMMAND}" "${SCSS_FILE}" > ${CSS_FILE};
+    green "REGENERATED";
+  fi;
+  echo;
+
+  if [ ${MODE} == "regenerate" ];
+  then
+    return 0;
   fi;
   return 1;
 }
 
 # Compile script options
-MODE="interactive";
+MODE="status-only";
 OPTS=( $(getopt -o irsh -l interactive,regenerate,status-only,help -- "$@") );
 if [ $? -ne 0 ]
 then
@@ -140,35 +168,47 @@ SCSS_FILE_LIST="${SCSS_FILE_LIST[@]}";
 
 TOTAL_TEST=0;
 PASSED_TEST=0;
+MISSED_TEST=0;
 
 # Foreach source file
 for SCSS_FILE in ${SCSS_FILE_LIST};
 do
-  if available sass;
+  if ready ${SCSS_FILE} ${MODE};
   then
-    TOTAL_TEST=$(expr ${TOTAL_TEST} + 1);
-    if test sass ${SCSS_FILE} ${MODE};
+    if available sass;
     then
-      PASSED_TEST=$(expr ${PASSED_TEST} + 1);
+      TOTAL_TEST=$(expr ${TOTAL_TEST} + 1);
+      if test sass ${SCSS_FILE} ${MODE};
+      then
+        PASSED_TEST=$(expr ${PASSED_TEST} + 1);
+      fi;
     fi;
-  fi;
 
-  if available node-sass;
-  then
-    TOTAL_TEST=$(expr ${TOTAL_TEST} + 1);
-    if test node-sass ${SCSS_FILE} ${MODE};
+    if available node-sass;
     then
-      PASSED_TEST=$(expr ${PASSED_TEST} + 1);
+      TOTAL_TEST=$(expr ${TOTAL_TEST} + 1);
+      if test node-sass ${SCSS_FILE} ${MODE};
+      then
+        PASSED_TEST=$(expr ${PASSED_TEST} + 1);
+      fi;
     fi;
+  else
+    TOTAL_TEST=$(expr ${TOTAL_TEST} + 1);
+    MISSED_TEST=$(expr ${MISSED_TEST} + 1);
   fi;
 done;
 
-FAILED_TEST=$(expr ${TOTAL_TEST} - ${PASSED_TEST});
+FAILED_TEST=$(expr ${TOTAL_TEST} - ${PASSED_TEST} - ${MISSED_TEST});
 
 echo ;
 if [ ${FAILED_TEST} -gt 0 ];
 then
   red "${FAILED_TEST} tests failed";
+  echo -n " ";
+fi;
+if [ ${MISSED_TEST} -gt 0 ];
+then
+  red "${MISSED_TEST} tests missed";
   echo -n " ";
 fi;
 if [ ${PASSED_TEST} -gt 0 ];
