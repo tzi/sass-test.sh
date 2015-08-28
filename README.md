@@ -64,8 +64,12 @@ sass-test --interactive folder/
 Projects using it
 ------
 
- * [herow.scss](https://github.com/tzi/herow.scss): A time-saving Sass grid system.
- * [chewing-grid.css](https://github.com/tzi/chewing-grid.css): A CSS Grid ideal for card listing design like tiles, videos or articles listing
+ * [![Build Status](https://travis-ci.org/tzi/herow.scss.svg)](https://travis-ci.org/tzi/herow.scss)
+   [herow.scss](https://github.com/tzi/herow.scss):
+   A time-saving Sass grid system.
+ * [![Build Status](https://travis-ci.org/tzi/chewing-grid.css.svg)](https://travis-ci.org/tzi/chewing-grid.css)
+   [chewing-grid.css](https://github.com/tzi/chewing-grid.css):
+   A CSS Grid ideal for card listing design like tiles, videos or articles listing
  
 Are you using sass-test.sh? [Let me know](https://twitter.com/iamtzi) about it or add it directly with a PR. 
  
